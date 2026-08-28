@@ -44,11 +44,11 @@ def main():
             time.sleep(0.3)
             choice: int = int(input(f"What's your choice {username} ? \n"))
 
-
-            if choice in [1, 2, 3, 4, 5, 6]:
-                pass
+            if choice not in range(1, 7):
+                console.print("Wrong Input !", style="bold red")
+                continue
         except (ValueError, TypeError):
-            console.print("Wrong Input !", style=" bold red")
+            console.print("Wrong Input !", style="bold red")
             continue
 
         match(choice):
