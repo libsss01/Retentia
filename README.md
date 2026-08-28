@@ -1,175 +1,142 @@
-# Retentia — A CLI Spaced-Repetition Tool
+# Retentia - A CLI spaced-repetition tool
 
-Retentia is a command-line spaced-repetition application inspired by Anki. It is designed for people who want to create flashcards, review them directly from the terminal, and keep track of their learning progress without needing a graphical interface.
+## Retentia is a project that allows you to study without too much effort directly inside your terminal.
 
-The project was built as my CS50P final project and helped me practice object-oriented programming, modularity, persistence, testing, CLI design, authentication, and spaced-repetition logic.
+This project is a CLI tool inspired by Anki, created to make studying easier for **nerds** like me, or simply for people who want to study without forgetting what they just learned a few minutes later.
+ 
+It uses a lot of concepts and principles such as OOP, modularity...
 
-## Main Features
+### Principal Features  
+- Create cards for the concepts you want to study  
+- Interactive menu for the user options  
+- CLI commands to use the tool without going through the menu  
+- Review cards for initialization after their creation and when they are due  
+- Statistics based on your deck and reviews  
+- Delete and update the question and/or answer of a card
+  
+### How does this project help you remember information better?
+> My project uses a spaced repetition system inspired by the Ebbinghaus forgetting curve.  
+> To learn more about this, you can consult the links below:  
+* https://en.wikipedia.org/wiki/Forgetting_curve
+* https://en.wikipedia.org/wiki/Spaced_repetition  
 
-- Create flashcards for concepts you want to study
-- Review cards immediately after creation to initialize their scheduling
-- Review cards again when they become due
-- Search for cards in your deck
-- Update or delete existing cards
-- Display statistics about cards and reviews
-- Use an interactive menu or direct CLI commands
-- Persist users, cards, reviews, and review logs in JSON storage
-- Hash and verify passwords with `bcrypt`
-- Schedule reviews with the FSRS algorithm
+But now, what will make your learning stick?  
+To explain it simply, you don't learn something once and that's it. Your learning is now based on how well you retain the information.  
+Information is now reviewed at different and consecutive intervals before you forget it.
 
-## How Retentia Helps You Remember
+## Instructions 
 
-Retentia is based on the principle of **spaced repetition**: instead of reviewing information continuously or only once, you revisit it at increasingly appropriate intervals.
+### Run the project
+Through the menu loop (with no command-line argument):  
 
-The project uses the `fsrs` package to manage card states and future review dates. The idea is closely related to the Ebbinghaus forgetting curve: reviewing information before it is forgotten helps strengthen long-term retention.
+`python routing.py`
 
-Useful references:
+With a command-line argument:
 
-- [Forgetting curve](https://en.wikipedia.org/wiki/Forgetting_curve)
-- [Spaced repetition](https://en.wikipedia.org/wiki/Spaced_repetition)
+`python routing.py [command line arg]`
 
-## Installation
+### Project Structure
+The project consists of several files, each one with a specific purpose:  
 
-Clone the repository and install the required packages:
+#### **'requirements.txt':**  
+Text file with all the packages you need to install to use this project.
 
-```bash
-git clone https://github.com/libsss01/Retentia.git
-cd Retentia
-pip install -r requirements.txt
-```
+#### **'setup.py':**
+Its purpose is to create the 2 JSON storage files. If they are already created, nothing happens.  
 
-The storage files are created automatically by the setup logic when needed.
+#### **'project.py':**  
+<mark style="background-color: white"><b>Main file of the project</b></mark>  
+Presents the menu with the different options or project features to the user (create cards, review cards, statistics, and actions on cards), and depending on the user's choice, calls the function that holds the logic. It is also an entry point of the project if you want to launch the menu directly.  
 
-## Running the Project
+#### **'logic.py':**  
+Consists of 5 functions with type hints that hold the project features:  
 
-### Interactive menu
+- `engine_init`: with 3 parameters of the object types `User`, `Deck`, `Manager`, and a `str` or `None` return type hint.  
+The principal purpose of this function is to call the method for card creation (on the user object) and storage (on the manager object), and manage the logic of the different behaviors.
 
-```bash
-python routing.py
-```
+- `review_time`: with 3 parameters of the object types `User`, `Deck`, `Manager`, and a `str` or `None` return type hint.  
+Calls the review method (on the deck object) to make reviews when cards are due, stores them with the appropriate method (on the manager object), and manages the logic of the different behaviors.
 
-### CLI commands
+- `display_statistics`: with 2 parameters of the object types `User` and `Deck`, and also a `str` or `None` return type hint.  
+Shows a wide range of statistics by calling some statistical methods (on the deck object).
 
-```bash
-python routing.py [command]
-```
+- `search_cards`: with 2 parameters of the object types `User` and `Deck`, and also a `str` return type hint.  
+Manages the logic behind the call to the search method (on the deck object) and displays the concept and its answer depending on whether the concept exists or not.
 
-Available commands include:
+- `make_actions`: with 2 parameters of the object types `User` and `Deck`, and also a `str` return type hint.  
+Manages the logic behind the call to the `perform_actions_on_deck` method (on the deck object), which, based on the concept, provides update (question and/or answer) or delete operations.
 
-- `build` — create and initialize cards
-- `review` — review cards that are currently due
-- `show-statistics` — display statistics about your deck and reviews
-- `search` — search for a specific card
-- `make-actions` — update or delete a card
+#### **'engine.py':**
+File where our 3 principal classes live:  
 
-## Project Structure
+- ***Deck***: takes a user object as an argument.
+    - Properties:  
+        - **User object**  
+        - **Scheduler object**  
+    - Methods:  
+        - `cards_due`: retrieves due cards.  
+        - `retreive_cards`: expects a list of `card_id` values as an argument. It retrieves cards and logs for review when the review was created in another instance.  
+        - `review_init`: method for reviewing cards with a rating immediately after their creation.  
+        - `review_cards`: review method that allows the user to review cards when they are due.  
+        - `search`: method that takes a concept as an argument, which will be the subject of the search in the deck.  
+        - `perform_actions_on_deck`: method that expects a concept and a choice provided by the user. The choice defines what operation the user wants to do (deletion or updating), and this operation affects the given concept.  
+        - `number_of_reviews`: method that returns the number of reviews of the dedicated user.  
+        - `reviews_per_day`: method that returns the number of reviews per day done by the user.  
+        - `reviews_per_week`: method that returns the number of reviews per week done by the user.  
+        - `streak`: method that sets and updates the streak of the user.  
+        - `number_of_cards`: method that returns the number of cards of a user.  
+        - `number_of_cards_by_rating`: method that returns the number of cards by rating of a user.  
+        - `number_of_cards_by_state`: method that returns the number of cards by state of a user.  
+        - `number_of_cards_by_due_today`: method that returns the number of cards due today.  
+        - `number_of_cards_upcoming`: method that returns the number of cards upcoming.  
+        - `number_of_overdue_cards`: method that returns the number of overdue cards.
 
-### `project.py`
+- ***User***:  
+    - Properties:  
+        - **id** (`int`): user id  
+        - **username** (`str`)  
+        - **lists_of_concepts** (`list`): list of concepts that stores cards created between instances  
+        - **user_dict** (`dict`): dictionary with user and review information  
+        - **password** (`str`): user password  
+        - **id_cards** (`int`): id for cards  
+    - Methods:  
+        - getters for "private properties" (`user`, `password`, `lists_of_concepts`)  
+        - `create_user_dict`: method that sets the user dict.  
+        - `add_cards`: method that adds cards to the deck when the user already has cards.  
+        - `create_concept`: method that creates a concept with a question/answer for a new user.
 
-Contains the interactive menu and acts as the main entry point for the menu-based experience. It creates the core `User`, `Deck`, and `Manager` objects and delegates each feature to the application logic.
+- **Manager**: class responsible for storing data, taking a user object, a user dict, and a deck object.  
+    - Properties:  
+        - **User object**  
+        - **user dict**  
+        - **deck object**  
+    - Methods:  
+        - `store_user_info`  
+        - `store_review_info`
 
-### `logic.py`
+#### **'tools.py':**
+File that defines the helper functions of the project for different purposes, such as:  
 
-Contains the main use-case functions that coordinate user interactions with the domain objects:
+- Interactions with storage files  
+- Retrieving statistical information  
+- Password checking, etc.  
+    
+#### **'routing.py':**  
+Its purpose is to give the user the possibility to use the tool through the menu or directly in the terminal using command-line arguments.  
+We created this file to receive the user's input: if a command-line argument is provided, we launch the feature based on that command; otherwise, we launch the menu loop (`project.py`).  
 
-- `engine_init` — creates cards, initializes their first reviews, and persists the result
-- `review_time` — checks for due or overdue cards and launches a review session
-- `display_statistics` — displays deck and review statistics
-- `search_cards` — searches for a card by concept
-- `make_actions` — updates or deletes a card
+#### **'commands.py':**  
+File where the command-line commands are defined and attached to the functions that run the logic.  
+We have 5 commands in this file and throughout the project:  
 
-### `engine.py`
+1. `build` command to create cards (they are reviewed immediately after creation)  
+2. `review` command to review cards that are currently due  
+3. `show-statistics` to display the user statistics based on their deck and reviews  
+4. `search` command to search for a specific card inside your deck  
+5. `make-actions` to make an action (delete or update concept and/or answer) on a specific card  
 
-Contains the three main classes of the application.
+#### **'typer__app.py':**  
+Creates the single and shared Typer object for the purpose of sharing the same context and object throughout the project, preventing the creation of several objects and different contexts.
 
-#### `Deck`
-
-Handles card and review behavior, including:
-
-- retrieving due cards
-- initializing reviews
-- reviewing due cards
-- searching cards
-- updating or deleting cards
-- counting reviews and cards
-- computing review statistics
-- tracking card states and ratings
-
-The deck uses an FSRS `Scheduler` to calculate review scheduling.
-
-#### `User`
-
-Represents a Retentia user and manages user-specific information such as:
-
-- username and password
-- flashcards
-- user data
-- card identifiers
-- creation and loading of concepts
-
-#### `Manager`
-
-Handles persistence of user information, cards, reviews, and review logs.
-
-### `tools.py`
-
-Contains helper functions used throughout the application, including:
-
-- JSON storage operations
-- retrieving statistical information
-- password encoding and verification
-- user and deck checks
-- helper utilities shared by the other modules
-
-### `routing.py`
-
-Chooses how Retentia should start. If the user provides a command-line command, it routes execution to the corresponding CLI command. Otherwise, it launches the interactive menu.
-
-### `commands.py`
-
-Defines the command-line commands and connects them to the application logic.
-
-### `typer__app.py`
-
-Creates the shared Typer application object used by the CLI modules.
-
-### `setup.py`
-
-Ensures the JSON storage files required by Retentia exist before the application uses them.
-
-### `tests_project.py`
-
-Contains the automated test suite. The tests cover important behaviors such as:
-
-- card creation and persistence
-- password hashing and matching
-- review behavior and side effects
-- statistics
-- card search
-- deletion and updates
-
-The tests use `pytest` and `monkeypatch` to simulate interactive input and verify both returned values and changes written to storage.
-
-### `requirements.txt`
-
-Lists the external Python packages required to run the project.
-
-## Technologies and Concepts Used
-
-- Python
-- Object-Oriented Programming
-- FSRS spaced-repetition scheduling
-- Typer
-- Rich
-- PyFiglet
-- bcrypt
-- JSON persistence
-- pytest
-- monkeypatch-based testing
-- modular application design
-
-## Why I Built Retentia
-
-Retentia started as a learning project, but its goal is practical: make active recall and spaced repetition accessible directly from the terminal.
-
-More importantly, building it forced me to move beyond small isolated Python exercises and work with a larger program involving state, multiple modules, object interactions, persistence, third-party libraries, side effects, error handling, and automated tests.
+#### **'tests_project.py':**  
+Consists of 14 functions that test the whole project for different purposes such as storage, side effects, behaviors, etc.
